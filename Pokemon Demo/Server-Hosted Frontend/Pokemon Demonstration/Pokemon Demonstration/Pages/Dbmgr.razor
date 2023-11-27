@@ -1,0 +1,89 @@
+﻿@page "/dbmgr"
+@using Pokemon_Demonstration.Data
+@using Pokemon_Demonstration.Services
+@inject DbAPIService APIService
+@inject IPokeAPIService RetrievalService
+
+<div class="col-md-6">
+    <div class="input-group">
+        <input class="form-control" type="number" @bind=InputNumber />
+        <button class="btn btn-primary" @onclick="PostPokemon">Add Pokemon</button>
+    </div>
+</div>
+<div style="color:@SuccessColor"> @GetSuccessMessage() </div>
+
+<div class="col-md-6" style="margin-top: 10px;">
+    <div class="input-group">
+        <input class="form-control" type="number" @bind=DelNumber />
+        <button class="btn btn-danger" @onclick="DeletePokemon">Delete Pokemon</button>
+    </div>
+</div>
+<div style="color:@DelColor"> @GetDelMessage() </div>
+
+@code {
+    private int InputNumber { get; set; } = 0;
+    private int DelNumber { get; set; } = 0;
+
+    //Used for UI
+    private int SuccessFlag { get; set; } = -1;
+    private int DelFlag { get; set; } = -1;
+
+    private string SuccessColor => SuccessFlag == 0 ? "red" : "green";
+    private string DelColor => DelFlag == 0 ? "red" : "green";
+
+    private async Task PostPokemon() {
+        try {
+            // Get the Pokemon from the RetrievalService
+            Pokemon pokemon = await RetrievalService.GetPokemon(InputNumber);
+
+            // Post the Pokemon to the APIService
+            await APIService.PostPokemon(pokemon);
+
+            // Set the success flag to 1
+            SuccessFlag = 1;
+        }
+        catch (Exception ex) {
+            // Set the success flag to 0
+            SuccessFlag = 0;
+        }
+    }
+
+    private async Task DeletePokemon() {
+        try {
+            // Delete the Pokemon from the APIService
+            await APIService.DeletePokemon(DelNumber);
+
+            // Set the success flag to 1
+            DelFlag = 1;
+        }
+        catch (Exception ex) {
+            // Set the success flag to 0
+            DelFlag = 0;
+        }
+    }
+
+    //UI Response Functions
+    private string GetSuccessMessage() {
+        if (SuccessFlag == 1) {
+            return "Pokemon Added Successfully!";
+        }
+        else if (SuccessFlag == 0) {
+            return "Pokemon Failed to Add!";
+        }
+        else {
+            return "";
+        }
+    }
+
+    private string GetDelMessage() {
+        if (DelFlag == 1) {
+            return "Pokemon Deleted Successfully!";
+        }
+        else if (DelFlag == 0) {
+            return "Pokemon Failed to Delete!";
+        }
+        else {
+            return "";
+        }
+    }
+}

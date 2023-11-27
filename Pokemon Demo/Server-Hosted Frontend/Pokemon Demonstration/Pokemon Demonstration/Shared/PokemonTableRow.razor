@@ -1,0 +1,14 @@
+﻿@using Pokemon_Demonstration.Data;
+<tr>
+	<td>
+		<div class="image-container">
+			<img src="@pokemon.ImageUrl" class="silhouette-image" />
+		</div>
+	</td>
+	<td>@pokemon</td>
+</tr>
+
+@code {
+	[Parameter]
+	public Pokemon pokemon { get; set; }
+}
